@@ -1,37 +1,58 @@
+library(e1071) # for svm
 
-# Load data
-mixture.example.data <- source("mixture.example")$value
+# Data loading and preprocessing
+mixture <- source("mixture.example")$value
 
-# Define the color var, neg=red, pos=blue
-pr  = rgb(1,0.4,0.4)
-pb  = rgb(0.4,0.4,1) 
-bgr = rgb(1,0.7,0.7) 
-bgb = rgb(0.7,0.7,1) 
+features_train <- data.frame(v1=mixture$x[,1],v2=mixture$x[,2])
+features_pred  <- data.frame(v1=mixture$xnew[,1],v2=mixture$xnew[,2])
+labels_train   <- data.frame(label=as.integer(mixture$y))
 
-mixture.example.data$color[mixture.example.data$y] = pr
-mixture.example.data$color[!mixture.example.data$y] = pb
+px <- mixture$px1
+px2 <- mixture$px2
 
-mixture.example.data$paddingColor[mixture.example.data$prob > 0.44] = bgr
-mixture.example.data$paddingColor[mixture.example.data$prob < 0.44] = bgb
+train = data.frame(features_train, labels_train)
 
+# to build and train the svm.
+getSVMClassifier <- function(c){
+  return(svm(label~v1+v2, data=train, cost=c, type="C-classification", probability=TRUE))
+}
 
+# to plot the classification result.
+plotResult <- function(svm){
+  result = predict(svm,features_pred,probability=TRUE)
+  
+  features_pred$color[result==1] = "lightcoral"
+  features_pred$color[result==0] = "lightblue"
 
-plot(
-  mixture.example.data$xnew[,1],
-  mixture.example.data$xnew[,2],
-  main = "Classification result",
-  sub  = "With Naive bayes",
-  xlab = "x1",
-  ylab = "y1",
-  cex = 0.3,
-  pch = 20,
-  col=mixture.example.data$paddingColor,
-)
+  
+  # Prob matrix reshape
+  prob = attr(result,"probabilities")
+  prob = prob[,1] # Choose class 1's prob
+  prob <- matrix(prob, length(px), length(px2))
+  
+  # draw the decesion boundary/surface
+  contour(px, px2, prob,
+          levels=0.5, labels="0.5",
+          xlab="", ylab="",
+          main=paste("SVM with Cost",toString(svm$cost)),
+          axes=FALSE,
+          lwd=1.6
+  )
+  
+  # points the lattices.
+  points(x=features_pred[,1],
+        y=features_pred[,2],
+        cex=0.6,pch=20,col=features_pred$color)
+  
+  # points the training data.
+  points(x=train$v1,y=train$v2,
+         col=ifelse(train$label==0,"cornflowerblue","coral"),
+         pch=19,cex=1.3,lwd=1.5)
+  
+  #traget the support point.
+  points(x=train$v1[svm$index],
+         y=train$v2[svm$index],pch=5,cex=1.5)
+}
 
-points(
-  mixture.example.data$x[,1],
-  mixture.example.data$x[,2],
-  col=mixture.example.data$color,
-  pch = 'o',
-)
+plotResult(getSVMClassifier(1200))
 
