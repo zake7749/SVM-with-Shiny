@@ -20,7 +20,7 @@ shinyUI(fluidPage(
       p("You can observe how the cost value in svm influence the decesion surface by sliding the bar."),
       p("Hope this project is able to give you a deeper view of suppor vector machine."),
       br(),
-      p("Fork this proj on",a("Github",href="zake7749.github.io")),
+      p("Fork this proj on",a("Github",href="https://github.com/zake7749/SVM-with-Shiny")),
       p("Author: Justin Yang"),
       plotOutput("svmPlot")
     )

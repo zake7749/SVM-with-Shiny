@@ -2,6 +2,8 @@
 
 對 `mixture.example` 進行分類與結果視覺化，並提供一個 Shiny 的交互介面來調動模型，藉此認知超參數會對分類器造成什麼影響。
 
+## [馬上嘗試](https://zake7749.shinyapps.io/shiny/)
+
 ## 分類器
 
 * k-鄰居 (knn.R) : 於 Shiny提供鄰居數的調整
@@ -32,6 +34,9 @@ marginal       marginal probability at each lattice point
 px1	       69 lattice coordinates for x.1
 px2	       99 lattice values for x.2  (69*99=6831)
 ```
+
+以 KNN 的分類結果如圖
+![KNN20-Result](https://raw.githubusercontent.com/zake7749/SVM-with-Shiny/master/result/KNN-20.png)
 
 ## License
 
